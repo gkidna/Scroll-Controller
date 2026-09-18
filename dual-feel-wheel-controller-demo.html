@@ -1,0 +1,1239 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dual-Feel Wheel Controller Demo</title>
+    <link rel="icon" href="data:," />
+    <style>
+:root {
+  color-scheme: light;
+  --bg: #f7f9fb;
+  --panel: #ffffff;
+  --text: #151b23;
+  --muted: #5b6673;
+  --border: #d9e0e7;
+  --soft: #edf3f6;
+  --teal: #007d78;
+  --teal-strong: #005f5b;
+  --amber: #b96f00;
+  --red: #bb312b;
+  --ink: #20242a;
+  --shadow: 0 18px 45px rgba(24, 39, 54, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", Arial, sans-serif;
+}
+
+button {
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  border-radius: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+button:hover {
+  border-color: var(--teal);
+  background: #f2fbfa;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+button:focus-visible,
+.sentence-box:focus-visible {
+  outline: 3px solid rgba(0, 125, 120, 0.32);
+  outline-offset: 3px;
+}
+
+button svg {
+  width: 19px;
+  height: 19px;
+  fill: currentColor;
+  flex: 0 0 auto;
+}
+
+.app {
+  width: min(1180px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 28px 0;
+}
+
+.topbar {
+  min-height: 86px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.12;
+  font-weight: 850;
+}
+
+.topbar p,
+.panel-head p,
+.timeline-meta,
+.feedback-head span {
+  color: var(--muted);
+}
+
+.topbar p {
+  margin-top: 8px;
+  font-size: 16px;
+}
+
+.status-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.status-strip > span {
+  min-height: 36px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  font-weight: 800;
+}
+
+.language-switch {
+  min-height: 36px;
+  min-width: 64px;
+  padding: 7px 12px;
+  color: var(--teal-strong);
+}
+
+.mode-badge.detent {
+  color: var(--teal-strong);
+}
+
+.mode-badge.free {
+  color: var(--amber);
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(340px, 0.8fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 22px;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+h2 {
+  font-size: 22px;
+  line-height: 1.25;
+}
+
+.panel-head p {
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+.primary-action {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+  min-width: 104px;
+}
+
+.primary-action:hover {
+  background: var(--teal-strong);
+  border-color: var(--teal-strong);
+}
+
+.secondary-action {
+  min-width: 96px;
+}
+
+.sentence-box {
+  min-height: 218px;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, #ffffff 0%, #f9fcfd 100%);
+  border-radius: 8px;
+  padding: clamp(18px, 3vw, 34px);
+  display: flex;
+  align-items: center;
+}
+
+.sentence-box p {
+  max-width: 860px;
+  font-size: clamp(27px, 4vw, 46px);
+  line-height: 1.35;
+  font-weight: 850;
+}
+
+.timeline {
+  margin-top: 20px;
+}
+
+.timeline-track {
+  height: 12px;
+  background: var(--soft);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid #d3dde5;
+}
+
+.timeline-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--teal), #1a9f90 60%, var(--amber));
+  transition: width 180ms ease;
+}
+
+.timeline-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.transport {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.controller {
+  display: flex;
+  flex-direction: column;
+}
+
+.device-stage {
+  background: #f2f6f8;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-height: 264px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.device-body {
+  width: 184px;
+  height: 236px;
+  border-radius: 34px;
+  background: linear-gradient(180deg, #333a42 0%, #15191f 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 18px 38px rgba(0, 0, 0, 0.24);
+  position: relative;
+}
+
+.device-body::before {
+  content: "";
+  position: absolute;
+  inset: 14px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 25px;
+}
+
+.wheel {
+  --wheel-y: 0px;
+  --wheel-speed: 220ms;
+  width: 70px;
+  height: 86px;
+  border-radius: 26px;
+  background: repeating-linear-gradient(
+      180deg,
+      #101419 0 7px,
+      #2c343c 7px 12px,
+      #111820 12px 18px
+    );
+  background-position: 0 var(--wheel-y);
+  background-size: 100% 36px;
+  border: 4px solid #0c1015;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.08);
+  position: absolute;
+  top: 28px;
+  left: 57px;
+  overflow: hidden;
+  transition: background-position var(--wheel-speed) ease-out, box-shadow 180ms ease;
+}
+
+.wheel::before {
+  content: "";
+  position: absolute;
+  inset: 9px 16px;
+  border-left: 2px solid rgba(255, 255, 255, 0.12);
+  border-right: 2px solid rgba(255, 255, 255, 0.12);
+}
+
+.wheel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), transparent 28%, transparent 72%, rgba(0, 0, 0, 0.24));
+  pointer-events: none;
+}
+
+.wheel.detent {
+  --wheel-speed: 260ms;
+  box-shadow: 0 0 0 4px rgba(0, 125, 120, 0.28), inset 0 0 0 2px rgba(255, 255, 255, 0.08);
+}
+
+.wheel.free {
+  --wheel-speed: 95ms;
+  box-shadow: 0 0 0 4px rgba(185, 111, 0, 0.3), inset 0 0 0 2px rgba(255, 255, 255, 0.08);
+}
+
+.wheel span {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.wheel span:nth-child(1) {
+  top: 24px;
+}
+
+.wheel span:nth-child(2) {
+  top: 42px;
+}
+
+.wheel span:nth-child(3) {
+  top: 60px;
+}
+
+.wheel-telemetry {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.wheel-telemetry span {
+  min-height: 34px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  background: #fff;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.device-buttons {
+  position: absolute;
+  left: 36px;
+  right: 36px;
+  bottom: 26px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px 20px;
+}
+
+.device-key {
+  width: 42px;
+  height: 36px;
+  border-radius: 12px;
+  background: #252b32;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.device-key::before {
+  line-height: 1;
+}
+
+.mode-key::before {
+  content: "=";
+}
+
+.replay-key::before {
+  content: "↺";
+}
+
+.speed-down-key::before {
+  content: "-";
+}
+
+.speed-up-key::before {
+  content: "+";
+}
+
+.mode-key.active {
+  background: var(--amber);
+}
+
+.replay-key.active {
+  background: var(--teal);
+}
+
+.speed-down-key.active,
+.speed-up-key.active {
+  background: #315c75;
+}
+
+.control-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.feedback {
+  margin-top: 18px;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.feedback-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+h3 {
+  font-size: 17px;
+}
+
+.feedback ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+  max-height: 156px;
+  overflow: auto;
+}
+
+.feedback li {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: var(--muted);
+  background: #fff;
+}
+
+.feedback li strong {
+  color: var(--text);
+}
+
+@media (max-width: 860px) {
+  .app {
+    width: min(100% - 20px, 680px);
+    padding: 16px 0;
+  }
+
+  .topbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .status-strip {
+    justify-content: flex-start;
+  }
+
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .panel {
+    padding: 16px;
+  }
+
+  .panel-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .primary-action,
+  .secondary-action {
+    width: 100%;
+  }
+
+  .transport {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .transport #replayButton {
+    grid-column: span 2;
+  }
+
+  .timeline-meta {
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div>
+          <h1 data-i18n="appTitle">Dual-Feel Wheel Controller</h1>
+          <p id="connectionText">Local audiobook control demo</p>
+        </div>
+        <div class="status-strip" aria-live="polite">
+          <button id="languageButton" class="language-switch" type="button" aria-label="Switch to Chinese">
+            中文
+          </button>
+          <span id="modeBadge" class="mode-badge detent">Detent Scroll</span>
+          <span id="speedBadge">1.50x</span>
+          <span id="playBadge">Paused</span>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="panel player" aria-labelledby="playerTitle">
+          <div class="panel-head">
+            <div>
+              <h2 id="playerTitle" data-i18n="playerTitle">Audiobook Segment</h2>
+              <p id="chapterLabel">Paragraph 1 / Sentence 1</p>
+            </div>
+            <button id="playButton" class="primary-action" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+              <span>Start</span>
+            </button>
+          </div>
+
+          <div class="sentence-box" tabindex="0" aria-live="polite">
+            <p id="currentSentence"></p>
+          </div>
+
+          <div class="timeline" data-i18n-aria="timelineAria" aria-label="Audiobook progress">
+            <div class="timeline-track">
+              <div id="progressBar" class="timeline-fill"></div>
+            </div>
+            <div class="timeline-meta">
+              <span id="progressText">0 / 0</span>
+              <span id="boundaryText">Ready to rewind</span>
+            </div>
+          </div>
+
+          <div class="transport" data-i18n-aria="transportAria" aria-label="Playback controls">
+            <button id="coarseBackButton" type="button" data-i18n-title="coarseBackTitle" title="Coarse rewind">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M11 7 6 12l5 5V7zm7 0-5 5 5 5V7z"></path>
+              </svg>
+              <span data-i18n="coarseBack">Coarse -</span>
+            </button>
+            <button id="fineBackButton" type="button" data-i18n-title="fineBackTitle" title="Previous sentence">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m14 7-5 5 5 5V7z"></path>
+              </svg>
+              <span data-i18n="previous">Prev</span>
+            </button>
+            <button id="replayButton" type="button" data-i18n-title="replayTitle" title="Replay">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7 7v5h5L9.8 9.8A5 5 0 1 1 8.4 14H5.9A7.5 7.5 0 1 0 12 4.5c-2.1 0-4 .9-5.4 2.3L4.8 5 3.4 6.4 7 10z"></path>
+              </svg>
+              <span data-i18n="replay">Replay</span>
+            </button>
+            <button id="fineForwardButton" type="button" data-i18n-title="fineForwardTitle" title="Next sentence">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m10 7 5 5-5 5V7z"></path>
+              </svg>
+              <span data-i18n="next">Next</span>
+            </button>
+            <button id="coarseForwardButton" type="button" data-i18n-title="coarseForwardTitle" title="Coarse forward">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m13 7 5 5-5 5V7zM6 7l5 5-5 5V7z"></path>
+              </svg>
+              <span data-i18n="coarseForward">Coarse +</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="panel controller" aria-labelledby="controllerTitle">
+          <div class="panel-head">
+            <div>
+              <h2 id="controllerTitle" data-i18n="controllerTitle">Controller Status</h2>
+              <p id="modeHint">One detent per sentence</p>
+            </div>
+            <button id="modeButton" class="secondary-action" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7 7h10v3H7V7zm0 7h10v3H7v-3z"></path>
+              </svg>
+              <span data-i18n="modeButton">Mode</span>
+            </button>
+          </div>
+
+          <div class="device-stage" aria-hidden="true">
+            <div class="device-body">
+              <div id="wheel" class="wheel">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <div class="device-buttons">
+                <div id="modeDot" class="device-key mode-key"></div>
+                <div id="replayDot" class="device-key replay-key"></div>
+                <div id="speedDownDot" class="device-key speed-down-key"></div>
+                <div id="speedUpDot" class="device-key speed-up-key"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="wheel-telemetry" aria-live="polite">
+            <span id="wheelDirection">Wheel idle</span>
+            <span id="wheelSpeed">Detent pace</span>
+          </div>
+
+          <div class="control-grid">
+            <button id="speedDownButton" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 11h14v2H5z"></path>
+              </svg>
+              <span data-i18n="slower">Slower</span>
+            </button>
+            <button id="speedUpButton" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"></path>
+              </svg>
+              <span data-i18n="faster">Faster</span>
+            </button>
+            <button id="recentButton" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 5a7 7 0 1 1-6.3 4H3l4-4 4 4H8.1A5 5 0 1 0 12 7V5z"></path>
+              </svg>
+              <span data-i18n="fiveSeconds">5 sec</span>
+            </button>
+            <button id="paragraphButton" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 6h14v2H5V6zm0 5h10v2H5v-2zm0 5h14v2H5v-2z"></path>
+              </svg>
+              <span data-i18n="paragraph">Paragraph</span>
+            </button>
+          </div>
+
+          <div class="feedback">
+            <div class="feedback-head">
+              <h3 data-i18n="hapticTitle">Haptic Feedback</h3>
+              <span id="lastFeedback">Two short pulses</span>
+            </div>
+            <ul id="feedbackLog" aria-live="polite"></ul>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+const books = {
+  en: [
+    { paragraph: 1, text: "Blind and low-vision readers often rely on audio as their primary way to access books, courses, and papers." },
+    { paragraph: 1, text: "When a sentence is missed, a visual progress bar is not a reliable way to return to the exact point." },
+    { paragraph: 1, text: "A fixed ten-second rewind can be too much, while a two-second rewind may still be too little." },
+    { paragraph: 2, text: "This prototype brings a dual-feel wheel into audiobook control." },
+    { paragraph: 2, text: "Free scrolling is used for fast forward, fast rewind, and broad navigation across long audio." },
+    { paragraph: 2, text: "Detent scrolling is used for previous sentence, next sentence, and precise short-step review." },
+    { paragraph: 3, text: "The mode button switches between the two tactile modes." },
+    { paragraph: 3, text: "The replay button handles the most common missed-listening moment without requiring the user to check the mode first." },
+    { paragraph: 3, text: "Haptic feedback can confirm the current mode, a successful replay, or an audio boundary." },
+    { paragraph: 4, text: "The device connects through Bluetooth and behaves like a keyboard, so the first prototype does not need changes to audiobook software." },
+    { paragraph: 4, text: "If an app supports sentence-level control, each detent can map to one sentence." },
+    { paragraph: 4, text: "If sentence-level control is unavailable, the device can fall back to one- or two-second time steps." }
+  ],
+  zh: [
+    { paragraph: 1, text: "视障与低视力读者通常主要依靠听觉来获取书籍、课程和文献中的信息。" },
+    { paragraph: 1, text: "漏听一句话时，视觉进度条无法帮助他们可靠地回到准确位置。" },
+    { paragraph: 1, text: "固定回退十秒可能过多，而回退两秒又可能仍然不够。" },
+    { paragraph: 2, text: "这个原型将双手感滚轮应用到听书控制中。" },
+    { paragraph: 2, text: "自由滚动用于快速前进、快速后退和长音频中的大范围定位。" },
+    { paragraph: 2, text: "刻度滚动用于上一句、下一句和小步长精准回听。" },
+    { paragraph: 3, text: "模式按键用于切换两种不同的触觉模式。" },
+    { paragraph: 3, text: "回听按键可以直接处理最常见的漏听场景，不需要用户先确认当前模式。" },
+    { paragraph: 3, text: "触觉反馈可以确认当前模式、回听成功或已经到达音频边界。" },
+    { paragraph: 4, text: "设备通过蓝牙连接并模拟键盘，因此初代原型不需要改造听书软件。" },
+    { paragraph: 4, text: "如果应用支持语句级控制，滚轮每一格就可以对应一句话。" },
+    { paragraph: 4, text: "如果应用不支持语句级控制，设备可以退化为一到两秒的小步长跳转。" }
+  ]
+};
+
+const translations = {
+  en: {
+    documentTitle: "Dual-Feel Wheel Controller Demo",
+    appTitle: "Dual-Feel Wheel Controller",
+    connectionText: "Local audiobook control demo",
+    playerTitle: "Audiobook Segment",
+    timelineAria: "Audiobook progress",
+    transportAria: "Playback controls",
+    coarseBackTitle: "Coarse rewind",
+    coarseBack: "Coarse -",
+    fineBackTitle: "Previous sentence",
+    previous: "Prev",
+    replayTitle: "Replay previous sentence",
+    replay: "Replay",
+    fineForwardTitle: "Next sentence",
+    next: "Next",
+    coarseForwardTitle: "Coarse forward",
+    coarseForward: "Coarse +",
+    controllerTitle: "Controller Status",
+    modeButton: "Mode",
+    slower: "Slower",
+    faster: "Faster",
+    fiveSeconds: "5 sec",
+    paragraph: "Paragraph",
+    hapticTitle: "Haptic Feedback",
+    languageTarget: "中文",
+    languageAria: "Switch to Chinese",
+    modeDetent: "Detent Scroll",
+    modeFree: "Free Scroll",
+    playing: "Playing",
+    paused: "Paused",
+    chapterLabel: "Paragraph {paragraph} / Sentence {sentence}",
+    atBeginning: "At the beginning",
+    atEnd: "At the end",
+    readyToRewind: "Ready to rewind",
+    modeHintDetent: "Scroll up for previous, down for next",
+    modeHintFree: "Scroll up to rewind, down to fast-forward",
+    wheelIdle: "Wheel idle",
+    scrollingUp: "Scrolling up",
+    scrollingDown: "Scrolling down",
+    detentPace: "Detent pace",
+    freePace: "Free-scroll pace",
+    start: "Start",
+    pause: "Pause",
+    oneShortPulse: "One short pulse",
+    twoShortPulses: "Two short pulses",
+    lightPulse: "Light pulse",
+    longPulse: "Long pulse",
+    freeMode: "Free-scroll mode",
+    detentMode: "Detent-scroll mode",
+    replayTriggered: "Replay triggered",
+    boundaryReached: "Audio boundary reached",
+    speedChanged: "Speed {speed}x"
+  },
+  zh: {
+    documentTitle: "双手感滚轮控制器演示",
+    appTitle: "双手感滚轮控制器",
+    connectionText: "本地听书控制演示",
+    playerTitle: "听书片段",
+    timelineAria: "听书进度",
+    transportAria: "播放控制",
+    coarseBackTitle: "大步长后退",
+    coarseBack: "粗退",
+    fineBackTitle: "上一句",
+    previous: "上一句",
+    replayTitle: "回听上一句",
+    replay: "回听",
+    fineForwardTitle: "下一句",
+    next: "下一句",
+    coarseForwardTitle: "大步长前进",
+    coarseForward: "粗进",
+    controllerTitle: "控制器状态",
+    modeButton: "切换",
+    slower: "降速",
+    faster: "提速",
+    fiveSeconds: "5 秒",
+    paragraph: "段落",
+    hapticTitle: "触觉反馈",
+    languageTarget: "English",
+    languageAria: "切换到英文",
+    modeDetent: "刻度滚动",
+    modeFree: "自由滚动",
+    playing: "播放中",
+    paused: "已暂停",
+    chapterLabel: "第 {paragraph} 段 / 第 {sentence} 句",
+    atBeginning: "已在开头",
+    atEnd: "已到结尾",
+    readyToRewind: "可以回退",
+    modeHintDetent: "向上滚动到上一句，向下滚动到下一句",
+    modeHintFree: "向上滚动快退，向下滚动快进",
+    wheelIdle: "滚轮静止",
+    scrollingUp: "向上滚动",
+    scrollingDown: "向下滚动",
+    detentPace: "刻度速度",
+    freePace: "自由滚动速度",
+    start: "开始",
+    pause: "暂停",
+    oneShortPulse: "短震一次",
+    twoShortPulses: "短震两次",
+    lightPulse: "轻震一次",
+    longPulse: "长震一次",
+    freeMode: "自由滚动模式",
+    detentMode: "刻度滚动模式",
+    replayTriggered: "已触发回听",
+    boundaryReached: "已到达音频边界",
+    speedChanged: "当前速度 {speed}x"
+  }
+};
+
+const state = {
+  language: "en",
+  index: 0,
+  mode: "detent",
+  playing: false,
+  rate: 1.5,
+  wheelOffset: 0,
+  wheelDirectionKey: "wheelIdle",
+  timer: null,
+  speechToken: 0,
+  feedbackEntries: [],
+  lastFeedbackKey: "twoShortPulses"
+};
+
+const $ = (id) => document.getElementById(id);
+
+const els = {
+  connectionText: $("connectionText"),
+  languageButton: $("languageButton"),
+  modeBadge: $("modeBadge"),
+  speedBadge: $("speedBadge"),
+  playBadge: $("playBadge"),
+  playButton: $("playButton"),
+  chapterLabel: $("chapterLabel"),
+  currentSentence: $("currentSentence"),
+  progressBar: $("progressBar"),
+  progressText: $("progressText"),
+  boundaryText: $("boundaryText"),
+  modeHint: $("modeHint"),
+  wheel: $("wheel"),
+  wheelDirection: $("wheelDirection"),
+  wheelSpeed: $("wheelSpeed"),
+  modeDot: $("modeDot"),
+  replayDot: $("replayDot"),
+  speedDownDot: $("speedDownDot"),
+  speedUpDot: $("speedUpDot"),
+  lastFeedback: $("lastFeedback"),
+  feedbackLog: $("feedbackLog")
+};
+
+function sentenceDuration(text) {
+  return Math.max(1700, text.length * (state.language === "zh" ? 260 : 110));
+}
+
+function currentItem() {
+  return books[state.language][state.index];
+}
+
+function t(key, params = {}) {
+  const template = translations[state.language][key] ?? key;
+  return Object.entries(params).reduce(
+    (result, [name, value]) => result.replaceAll(`{${name}}`, value),
+    template
+  );
+}
+
+function applyStaticTranslations() {
+  document.documentElement.lang = state.language === "zh" ? "zh-CN" : "en";
+  document.title = t("documentTitle");
+
+  document.querySelectorAll("[data-i18n]").forEach((element) => {
+    element.textContent = t(element.dataset.i18n);
+  });
+
+  document.querySelectorAll("[data-i18n-title]").forEach((element) => {
+    element.title = t(element.dataset.i18nTitle);
+  });
+
+  document.querySelectorAll("[data-i18n-aria]").forEach((element) => {
+    element.setAttribute("aria-label", t(element.dataset.i18nAria));
+  });
+
+  els.connectionText.textContent = t("connectionText");
+  els.languageButton.textContent = t("languageTarget");
+  els.languageButton.setAttribute("aria-label", t("languageAria"));
+}
+
+function vibrate(pattern) {
+  if ("vibrate" in navigator) {
+    navigator.vibrate(pattern);
+  }
+}
+
+function renderFeedback() {
+  els.lastFeedback.textContent = t(state.lastFeedbackKey);
+  els.feedbackLog.replaceChildren();
+
+  state.feedbackEntries.forEach((entry) => {
+    const li = document.createElement("li");
+    const strong = document.createElement("strong");
+    strong.textContent = t(entry.labelKey);
+    li.append(strong, ` ${t(entry.detailKey, entry.params)}`);
+    els.feedbackLog.appendChild(li);
+  });
+}
+
+function addFeedback(labelKey, detailKey, params = {}) {
+  state.lastFeedbackKey = labelKey;
+  state.feedbackEntries.unshift({ labelKey, detailKey, params });
+  state.feedbackEntries = state.feedbackEntries.slice(0, 6);
+  renderFeedback();
+}
+
+function haptic(type) {
+  if (type === "free") {
+    vibrate(70);
+    addFeedback("oneShortPulse", "freeMode");
+  } else if (type === "detent") {
+    vibrate([55, 55, 55]);
+    addFeedback("twoShortPulses", "detentMode");
+  } else if (type === "replay") {
+    vibrate(45);
+    addFeedback("lightPulse", "replayTriggered");
+  } else if (type === "boundary") {
+    vibrate(250);
+    addFeedback("longPulse", "boundaryReached");
+  }
+}
+
+function render() {
+  const item = currentItem();
+  const book = books[state.language];
+  const percent = (state.index / (book.length - 1)) * 100;
+  const modeText = state.mode === "detent" ? t("modeDetent") : t("modeFree");
+  const playText = state.playing ? t("playing") : t("paused");
+
+  els.modeBadge.textContent = modeText;
+  els.modeBadge.className = `mode-badge ${state.mode}`;
+  els.speedBadge.textContent = `${state.rate.toFixed(2)}x`;
+  els.playBadge.textContent = playText;
+  els.chapterLabel.textContent = t("chapterLabel", {
+    paragraph: item.paragraph,
+    sentence: state.index + 1
+  });
+  els.currentSentence.textContent = item.text;
+  els.progressBar.style.width = `${percent}%`;
+  els.progressText.textContent = `${state.index + 1} / ${book.length}`;
+  els.boundaryText.textContent =
+    state.index === 0 ? t("atBeginning") : state.index === book.length - 1 ? t("atEnd") : t("readyToRewind");
+  els.modeHint.textContent =
+    state.mode === "detent" ? t("modeHintDetent") : t("modeHintFree");
+  els.wheel.className = `wheel ${state.mode}`;
+  els.wheel.style.setProperty("--wheel-y", `${state.wheelOffset}px`);
+  els.wheelDirection.textContent = t(state.wheelDirectionKey);
+  els.wheelSpeed.textContent = state.mode === "detent" ? t("detentPace") : t("freePace");
+  els.modeDot.classList.toggle("active", state.mode === "free");
+  els.playButton.querySelector("span").textContent = state.playing ? t("pause") : t("start");
+  renderFeedback();
+}
+
+function cancelSpeech() {
+  state.speechToken++;
+  window.speechSynthesis?.cancel();
+  if (state.timer) {
+    clearTimeout(state.timer);
+    state.timer = null;
+  }
+}
+
+function speakCurrent() {
+  cancelSpeech();
+  if (!state.playing) {
+    render();
+    return;
+  }
+
+  const text = currentItem().text;
+  const token = state.speechToken;
+  if ("speechSynthesis" in window) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = state.language === "zh" ? "zh-CN" : "en-US";
+    utterance.rate = state.rate;
+    utterance.onend = () => {
+      if (state.playing && token === state.speechToken) {
+        moveSentence(1, { speak: true, source: "auto" });
+      }
+    };
+    window.speechSynthesis.speak(utterance);
+  } else {
+    state.timer = setTimeout(() => {
+      if (state.playing) {
+        moveSentence(1, { speak: true, source: "auto" });
+      }
+    }, sentenceDuration(text) / state.rate);
+  }
+
+  render();
+}
+
+function setPlaying(next) {
+  state.playing = next;
+  if (state.playing) {
+    speakCurrent();
+  } else {
+    cancelSpeech();
+    render();
+  }
+}
+
+function setIndex(nextIndex, options = {}) {
+  const clamped = Math.max(0, Math.min(books[state.language].length - 1, nextIndex));
+  const hitBoundary = clamped !== nextIndex;
+  state.index = clamped;
+
+  if (hitBoundary) {
+    haptic("boundary");
+  }
+
+  if (options.speak && state.playing) {
+    speakCurrent();
+  } else {
+    render();
+  }
+}
+
+function animateWheel(direction, amount) {
+  state.wheelOffset += direction * amount;
+  state.wheelDirectionKey = direction < 0 ? "scrollingUp" : "scrollingDown";
+}
+
+function moveSentence(direction, options = {}) {
+  if (options.animateWheel) {
+    animateWheel(direction, 22);
+  }
+  setIndex(state.index + direction, options);
+}
+
+function coarseMove(direction, options = {}) {
+  if (options.animateWheel) {
+    animateWheel(direction, 72);
+  }
+  setIndex(state.index + direction * 3, { speak: state.playing });
+}
+
+function replayPreviousSentence() {
+  state.replayFlash = true;
+  els.replayDot.classList.add("active");
+  setTimeout(() => els.replayDot.classList.remove("active"), 180);
+  setIndex(state.index - 1, { speak: true });
+  haptic("replay");
+  if (!state.playing) {
+    setPlaying(true);
+  }
+}
+
+function replayRecentFiveSeconds() {
+  setIndex(state.index - 2, { speak: true });
+  haptic("replay");
+  if (!state.playing) {
+    setPlaying(true);
+  }
+}
+
+function replayParagraph() {
+  const book = books[state.language];
+  const currentParagraph = currentItem().paragraph;
+  let target = state.index;
+
+  while (target > 0 && book[target - 1].paragraph === currentParagraph) {
+    target--;
+  }
+
+  if (target === state.index && target > 0) {
+    const previousParagraph = book[target - 1].paragraph;
+    while (target > 0 && book[target - 1].paragraph === previousParagraph) {
+      target--;
+    }
+  }
+
+  setIndex(target, { speak: true });
+  haptic("replay");
+  if (!state.playing) {
+    setPlaying(true);
+  }
+}
+
+function flashDeviceKey(element) {
+  element.classList.add("active");
+  setTimeout(() => element.classList.remove("active"), 180);
+}
+
+function toggleMode() {
+  state.mode = state.mode === "detent" ? "free" : "detent";
+  haptic(state.mode);
+  render();
+}
+
+function changeSpeed(delta) {
+  state.rate = Math.max(0.75, Math.min(2.5, Number((state.rate + delta).toFixed(2))));
+  flashDeviceKey(delta < 0 ? els.speedDownDot : els.speedUpDot);
+  addFeedback("lightPulse", "speedChanged", { speed: state.rate.toFixed(2) });
+  if (state.playing) {
+    speakCurrent();
+  } else {
+    render();
+  }
+}
+
+function toggleLanguage() {
+  const shouldResume = state.playing;
+  cancelSpeech();
+  state.language = state.language === "en" ? "zh" : "en";
+  applyStaticTranslations();
+  render();
+
+  if (shouldResume) {
+    speakCurrent();
+  }
+}
+
+function handleDirectional(direction, coarse) {
+  if (coarse || state.mode === "free") {
+    coarseMove(direction, { animateWheel: true });
+  } else {
+    moveSentence(direction, { speak: state.playing, animateWheel: true });
+  }
+}
+
+function bindButtons() {
+  els.languageButton.addEventListener("click", toggleLanguage);
+  $("playButton").addEventListener("click", () => setPlaying(!state.playing));
+  $("modeButton").addEventListener("click", toggleMode);
+  $("fineBackButton").addEventListener("click", () => moveSentence(-1, { speak: state.playing }));
+  $("fineForwardButton").addEventListener("click", () => moveSentence(1, { speak: state.playing }));
+  $("coarseBackButton").addEventListener("click", () => coarseMove(-1));
+  $("coarseForwardButton").addEventListener("click", () => coarseMove(1));
+  $("replayButton").addEventListener("click", replayPreviousSentence);
+  $("recentButton").addEventListener("click", replayRecentFiveSeconds);
+  $("paragraphButton").addEventListener("click", replayParagraph);
+  $("speedDownButton").addEventListener("click", () => changeSpeed(-0.25));
+  $("speedUpButton").addEventListener("click", () => changeSpeed(0.25));
+}
+
+function bindKeyboard() {
+  window.addEventListener("keydown", (event) => {
+    const key = event.key.toLowerCase();
+
+    if (event.key === " ") {
+      event.preventDefault();
+      setPlaying(!state.playing);
+      return;
+    }
+
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      return;
+    }
+
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      return;
+    }
+
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      handleDirectional(-1, event.ctrlKey || event.metaKey);
+      return;
+    }
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      handleDirectional(1, event.ctrlKey || event.metaKey);
+      return;
+    }
+
+    if (key === "m") {
+      event.preventDefault();
+      toggleMode();
+      return;
+    }
+
+    if (key === "r") {
+      event.preventDefault();
+      replayPreviousSentence();
+      return;
+    }
+
+    if (key === "f") {
+      event.preventDefault();
+      replayRecentFiveSeconds();
+      return;
+    }
+
+    if (key === "p") {
+      event.preventDefault();
+      replayParagraph();
+      return;
+    }
+
+    if (event.key === "[") {
+      event.preventDefault();
+      changeSpeed(-0.25);
+      return;
+    }
+
+    if (event.key === "]") {
+      event.preventDefault();
+      changeSpeed(0.25);
+    }
+  });
+}
+
+function init() {
+  bindButtons();
+  bindKeyboard();
+  applyStaticTranslations();
+  addFeedback("twoShortPulses", "detentMode");
+  render();
+}
+
+init();
+
+    </script>
+  </body>
+</html>
+
